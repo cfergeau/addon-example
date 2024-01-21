@@ -2,16 +2,12 @@ ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:9.0.2
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
-# This segfaults in GitHub Actions on aarch64
-# This usually is called indirectly at apt-get install time through a libc-bin trigger
-RUN ldconfig
-
 # Setup base
 # hadolint ignore=DL3008,DL3009
 RUN \
-    cat /etc/ld.so.conf.d/* \
-    && ldconfig \
-    && apt-get update \
+    apt-get update \
+    && rm /var/lib/dpkg/triggers/ldconfig \
+    && apt-get -y upgrade \
     && apt-get install -y --no-install-recommends \
         binutils \
     && apt-get clean \
