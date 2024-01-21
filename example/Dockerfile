@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/hassio-addons/base:15.0.5
+ARG BUILD_FROM=ghcr.io/hassio-addons/ubuntu-base:9.0.2
 # hadolint ignore=DL3006
 FROM ${BUILD_FROM}
 
@@ -6,9 +6,17 @@ FROM ${BUILD_FROM}
 COPY rootfs /
 
 # Setup base
-RUN apk add --no-cache \
-    coreutils=9.4-r1 \
-    wget=1.21.4-r0
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        binutils \
+    && apt-get clean \
+    && rm -fr \
+        /tmp/* \
+        /var/cache/* \
+        /var/lib/apt/lists/* \
+        /var/log/*.log \
+        /var/log/apt
 
 # Build arguments
 ARG BUILD_ARCH
